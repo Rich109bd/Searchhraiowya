@@ -16,15 +16,24 @@ from bot.helper.telegram_helper.filters import CustomFilters
 
 @new_thread
 def cloneNode(update, context):
-    args = update.message.text.split()
+    LOGGER.info(f"User: {update.message.from_user.first_name} [{update.message.from_user.id}]")
+    args = update.message.text.split(" ", maxsplit=2)
     reply_to = update.message.reply_to_message
     link = ''
     key = ''
-    dest_id = ''
     if len(args) > 1:
-        link = args[1].strip()
+        link = args[1]
         try:
-            key = args[2].strip()
+            key = args[2]
+        except IndexError:
+            pass
+    if reply_to is not None:
+        link = reply_to.text
+        if len(args) > 1:
+            key = args[1]
+    links = re.findall(r'(https?://\S+)', link)
+    results = ""
+    for link in links:
             try:
                 dest_id = BOOKMARKS[key]
             except KeyError:
@@ -35,6 +44,17 @@ def cloneNode(update, context):
         link = reply_to.text.split(maxsplit=1)[0].strip()
         try:
             key = args[1].strip()
+             try:
+            key = args[2]
+        except IndexError:
+            pass
+    if reply_to is not None:
+        link = reply_to.text
+        if len(args) > 1:
+            key = args[1]
+    links = re.findall(r'(https?://\S+)', link)
+    results = ""
+    for link in links:
             try:
                 dest_id = BOOKMARKS[key]
             except KeyError:
